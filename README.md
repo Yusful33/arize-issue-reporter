@@ -1,119 +1,106 @@
-# Arize Bug Reporter CLI
+# Arize Issue Reporter
 
-A CLI tool to quickly create GitHub issues for bugs encountered in the Arize platform. Uses Claude AI to format your brief bug descriptions into well-structured GitHub issues.
+A CLI tool to quickly create GitHub issues for bugs and feature requests in the Arize platform.
+
+## Quick Start
+
+```bash
+arize-issue
+```
+
+That's it! The tool guides you through everything interactively.
+
+## What It Does
+
+1. **Asks for issue type** - Bug report or feature request
+2. **Gets your description** - Brief summary of the issue
+3. **Takes the Arize URL** - Auto-detects Space ID
+4. **Customer tagging** - Optional, for customer-related issues
+5. **Screenshot support** - Paste from clipboard (Cmd+V)
+6. **Video recordings** - Paste Loom/Zoom URLs
+7. **AI formatting** - Generates a well-structured issue
+8. **Preview & confirm** - Review before creating
+9. **Creates the issue** - In Arize-ai/arize with proper labels
 
 ## Setup
 
 ### Prerequisites
 
-1. **GitHub CLI (`gh`)** - Must be installed and authenticated
-   ```bash
-   # Install (macOS)
-   brew install gh
-   
-   # Authenticate
-   gh auth login
-   ```
+```bash
+# Install GitHub CLI
+brew install gh
+gh auth login
 
-2. **Anthropic API Key** - Required for AI-powered issue formatting
-   ```bash
-   export ANTHROPIC_API_KEY='your-api-key'
-   ```
+# Set Anthropic API key
+export ANTHROPIC_API_KEY='your-api-key'
+```
 
 ### Installation
 
 ```bash
-# Navigate to the directory
-cd /Users/yusufcattaneo/Projects/arize_bug_reporter
-
-# Create and activate virtual environment
+cd /Users/yusufcattaneo/Projects/arize-issue-reporter
 python3 -m venv .venv
 source .venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Make the script executable
-chmod +x arize_bug.py
 ```
 
-### Add an Alias (Recommended)
+### Add to Shell
 
-Add this to your `~/.zshrc` for easy access:
+Add to `~/.zshrc`:
 
 ```bash
-alias arize-bug="source /Users/yusufcattaneo/Projects/arize_bug_reporter/.venv/bin/activate && python /Users/yusufcattaneo/Projects/arize_bug_reporter/arize_bug.py"
+arize-issue() {
+    source /Users/yusufcattaneo/Projects/arize-issue-reporter/.venv/bin/activate
+    python /Users/yusufcattaneo/Projects/arize-issue-reporter/arize_bug.py "$@"
+}
 ```
 
-Then reload your shell:
-```bash
-source ~/.zshrc
-```
+Then: `source ~/.zshrc`
 
-## Usage
+### Install Cursor Skill (Optional)
 
-### Quick One-Liner
-
-```bash
-python arize_bug.py "Trace waterfall view doesn't show spans" \
-  --url "https://app.arize.com/organizations/abc/spaces/xyz/projects/my-project/traces" \
-  --space-id "xyz-123"
-```
-
-### With More Context
+To let Claude Code help you file issues, copy the skill:
 
 ```bash
-python arize_bug.py "Export to CSV is broken" \
-  --url "https://app.arize.com/..." \
-  --space-id "my-space-id" \
-  --expected "CSV file downloads" \
-  --actual "Nothing happens, no error shown"
+mkdir -p ~/.cursor/skills/arize-issue-reporter
+cp SKILL.md ~/.cursor/skills/arize-issue-reporter/
 ```
 
-### Interactive Mode
+Now when you tell Claude about an Arize bug, it will suggest using this tool.
 
-```bash
-python arize_bug.py --interactive
-```
-
-### Dry Run (Preview Without Creating)
-
-```bash
-python arize_bug.py "Some bug description" \
-  --url "https://app.arize.com/..." \
-  --space-id "abc123" \
-  --dry-run
-```
-
-### With Labels
-
-```bash
-python arize_bug.py "UI rendering issue" \
-  --url "https://app.arize.com/..." \
-  --space-id "abc123" \
-  --labels bug \
-  --labels ui
-```
-
-## Options
-
-| Option | Short | Required | Description |
-|--------|-------|----------|-------------|
-| `--url` | `-u` | Yes | Arize platform URL where the bug occurred |
-| `--space-id` | `-s` | Yes | Space ID where the bug occurred |
-| `--expected` | `-e` | No | What you expected to happen |
-| `--actual` | `-a` | No | What actually happened |
-| `--labels` | `-l` | No | GitHub labels (can be used multiple times) |
-| `--dry-run` | | No | Preview the issue without creating it |
-| `--interactive` | `-i` | No | Interactive mode with prompts |
-
-## Example Output
+## Example Session
 
 ```
+$ arize-issue
+
+📝 Arize Issue Reporter - Interactive Mode
+
+Issue type:
+  1. Bug report (default)
+  2. Feature request
+Select type (1, 2): 1
+Describe the bug: Trace waterfall view shows empty when clicking from search
+Arize platform URL: https://app.arize.com/organizations/.../spaces/U3BhY2U6.../...
+   (Space ID auto-detected: U3BhY2U6...)
+Is this related to a specific customer? [y/N]: n
+Do you have a screenshot to attach? [y/N]: y
+   Paste your screenshot (Cmd+V), then press Enter: 
+   ✓ Screenshot captured
+Do you have any video recordings (Loom/Zoom)? [y/N]: n
+
 🤖 Generating issue with AI...
-📤 Creating GitHub issue...
+📸 Uploading screenshots...
+   ✓ Screenshot 1 uploaded successfully
+
+============================================================
+ISSUE PREVIEW
+============================================================
+
+📌 Title: [Bug] Trace waterfall view displays empty when selecting trace from search results
+...
+
+Create this issue? [Y/n]: y
 
 ✅ Issue created successfully!
-🔗 https://github.com/Arize-ai/arize/issues/1234
+🔗 https://github.com/Arize-ai/arize/issues/12345
 ```
-# arize-issue-reporter
